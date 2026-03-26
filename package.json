@@ -1,0 +1,43 @@
+{
+  "name": "pulldown-cmark-node",
+  "version": "1.0.0",
+  "description": "Blazingly fast Markdown to HTML renderer for Node.js using Rust's pulldown-cmark.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ton-username/pulldown-cmark-node"
+  },
+  "license": "MIT",
+  "keywords": [
+    "markdown",
+    "parser",
+    "rust",
+    "napi-rs",
+    "performance"
+  ],
+  "files": [
+    "index.d.ts",
+    "index.js",
+    "src",
+    "Cargo.toml"
+  ],
+  "napi": {
+    "binaryName": "pulldown-cmark-node",
+    "targets": [
+      "x86_64-unknown-linux-gnu",
+      "x86_64-apple-darwin",
+      "aarch64-apple-darwin",
+      "x86_64-pc-windows-msvc"
+    ]
+  },
+  "scripts": {
+    "build": "napi build --platform --release",
+    "build:debug": "napi build --platform",
+    "prepublishOnly": "napi prepublish -t npm",
+    "test": "node test.js"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^3.0.0"
+  }
+}
