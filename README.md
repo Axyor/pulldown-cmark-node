@@ -91,6 +91,10 @@ Returns the raw content of the document's metadata block.
 ### `markdownToPlainText(input: string): string`
 Strips Markdown syntax to return plain text content.
 
+## Acknowledgements
+
+This library is a Node.js wrapper for [pulldown-cmark](https://github.com/pulldown-cmark/pulldown-cmark), an excellent and high-performance Markdown parsing library written in Rust. Special thanks to its maintainers and contributors for their foundational work.
+
 ## License
 
 [MIT](LICENSE)
