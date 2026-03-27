@@ -1,21 +1,20 @@
 # pulldown-cmark-node
 
-[![NPM Version](https://img.shields.io/npm/v/pulldown-cmark-node.svg)](https://www.npmjs.com/package/pulldown-cmark-node)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+Native Node.js bindings for the Rust [pulldown-cmark](https://github.com/pulldown-cmark/pulldown-cmark) library.
 
-Blazingly fast Markdown to HTML renderer for Node.js, powered by the industry-standard Rust library [pulldown-cmark](https://github.com/pulldown-cmark/pulldown-cmark).
+## Introduction
 
-## Key Features
+pulldown-cmark-node provides high-performance Markdown parsing and HTML rendering for Node.js applications. By leveraging Rust's native performance and memory safety, it offers a fast and robust alternative to pure JavaScript implementations.
 
-- **🚀 Blazing Performance**: Up to 10-20x faster than pure JavaScript parsers.
-- **🛡️ Safe & Secure**: Built with Rust, ensuring memory safety.
-- **📦 Zero Dependency**: Compiled to a native binary (NAPI), no heavy Node.js dependencies.
-- **✨ Extended Features**: 
-    - Full GFM (GitHub Flavored Markdown) support.
-    - TOC generation via Heading Extraction.
-    - Metadata (Frontmatter) extraction.
-    - Math (LaTeX) support.
-    - Plain text conversion.
+## Features
+
+- High performance: Native execution for efficient parsing.
+- Memory safety: Built on Rust's ownership model.
+- Extensive GFM support: Tables, task lists, and strikethrough.
+- Heading extraction: Support for Table of Contents (TOC) generation.
+- Metadata support: YAML and Plus-style frontmatter extraction.
+- Plain text conversion: Formatting-free text extraction.
+- Math support: LaTeX math block parsing.
 
 ## Installation
 
@@ -25,21 +24,21 @@ npm install pulldown-cmark-node
 
 ## Usage
 
-### 1. Simple HTML Conversion
+### Basic Conversion
 
 ```javascript
 const { markdownToHtml } = require('pulldown-cmark-node');
 
-const md = '# Hello World\nThis is **fast**.';
-const html = markdownToHtml(md);
-console.log(html); 
-// <h1>Hello World</h1><p>This is <strong>fast</strong>.</p>
+const markdown = '# Hello World\nThis is **fast**.';
+const html = markdownToHtml(markdown);
 ```
 
-### 2. With Options (GFM, Math, Metadata)
+### Advanced Configuration
+
+Enable GFM extensions, math, and metadata processing:
 
 ```javascript
-const html = markdownToHtml(md, {
+const html = markdownToHtml(markdown, {
   gfm: true,
   math: true,
   metadataBlocks: true,
@@ -47,65 +46,50 @@ const html = markdownToHtml(md, {
 });
 ```
 
-### 3. Heading Extraction (Table of Contents)
+### Heading Extraction
 
-Useful for generating navigation sidebars or TOCs.
+Extract document structure for navigation or TOCs:
 
 ```javascript
 const { getHeadings } = require('pulldown-cmark-node');
 
 const headings = getHeadings('# Introduction\n## Installation');
-console.log(headings);
-// [
-//   { level: 1, text: 'Introduction', id: undefined },
-//   { level: 2, text: 'Installation', id: undefined }
-// ]
+// Returns: [{ level: 1, text: 'Introduction' }, { level: 2, text: 'Installation' }]
 ```
 
-### 4. Metadata Extraction (Frontmatter)
+### Metadata and Plain Text
 
 ```javascript
-const { extractMetadata } = require('pulldown-cmark-node');
+const { extractMetadata, markdownToPlainText } = require('pulldown-cmark-node');
 
-const md = '---\ntitle: My Post\n---\nContent';
-const yaml = extractMetadata(md);
-console.log(yaml); // "title: My Post"
-```
-
-### 5. Plain Text Snippet
-
-```javascript
-const { markdownToPlainText } = require('pulldown-cmark-node');
-
-const text = markdownToPlainText('# Title\n**Bold** content');
-console.log(text); // "Title\nBold content"
+const metadata = extractMetadata('---\ntitle: Post\n---\nContent');
+const plainText = markdownToPlainText('# Title\n**Bold** content');
 ```
 
 ## API Reference
 
 ### `markdownToHtml(input: string, options?: CompileOptions): string`
-Converts Markdown to HTML string.
+Main conversion function.
 
-**CompileOptions:**
-- `tables`: boolean (GFM Tables)
-- `footnotes`: boolean
-- `strikethrough`: boolean (GFM Strikethrough)
-- `tasklists`: boolean (GFM Tasklists)
-- `smartPunctuation`: boolean
-- `headingAttributes`: boolean (Allow `{#id}` syntax)
-- `metadataBlocks`: boolean (Allow YAML frontmatter)
-- `math`: boolean (Allow LaTeX `$ ... $`)
-- `gfm`: boolean (Enable all GFM extensions)
+**CompileOptions**
+- `tables`: Enable GFM tables.
+- `footnotes`: Enable footnote parsing.
+- `strikethrough`: Enable GFM strikethrough.
+- `tasklists`: Enable GFM task lists.
+- `smartPunctuation`: Enable smart quotes and dashes.
+- `headingAttributes`: Allow custom IDs via `{#id}`.
+- `metadataBlocks`: Support YAML/Plus frontmatter.
+- `math`: Support LaTeX math blocks.
+- `gfm`: Enable all GitHub Flavored Markdown extensions.
 
 ### `getHeadings(input: string): Array<Heading>`
-Returns a list of headings found in the document.
-`Heading` object: `{ level: number, text: string, id?: string }`.
+Returns document headings with levels and optional IDs.
 
 ### `extractMetadata(input: string): string | null`
-Extracts the raw content of the first metadata block found.
+Returns the raw content of the document's metadata block.
 
 ### `markdownToPlainText(input: string): string`
-Strips all Markdown formatting and returns the text content.
+Strips Markdown syntax to return plain text content.
 
 ## License
 
