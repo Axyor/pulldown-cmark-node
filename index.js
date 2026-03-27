@@ -576,4 +576,7 @@ if (!nativeBinding) {
 }
 
 module.exports = nativeBinding
+module.exports.extractMetadata = nativeBinding.extractMetadata
+module.exports.getHeadings = nativeBinding.getHeadings
 module.exports.markdownToHtml = nativeBinding.markdownToHtml
+module.exports.markdownToPlainText = nativeBinding.markdownToPlainText

@@ -2,8 +2,11 @@
 [package]
 authors = ["LongYinan <lynweklm@gmail.com>"]
 edition = "2021"
-name = "pulldown_cmark_node"
-version = "0.1.0"
+name = "pulldown-cmark-node"
+version = "1.0.0"
+description = "Blazingly fast Markdown to HTML renderer for Node.js using Rust's pulldown-cmark."
+repository = "https://github.com/ton-username/pulldown-cmark-node"
+license = "MIT"
 
 [lib]
 crate-type = ["cdylib"]
