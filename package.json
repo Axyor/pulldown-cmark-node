@@ -1,6 +1,6 @@
 {
   "name": "pulldown-cmark-node",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Blazingly fast Markdown to HTML renderer for Node.js using Rust's pulldown-cmark.",
   "main": "index.js",
   "types": "index.d.ts",
