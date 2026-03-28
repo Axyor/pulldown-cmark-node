@@ -201,16 +201,18 @@ pub fn markdown_to_plain_text(markdown_input: String) -> String {
           plain_text.push('\n');
         }
       }
-      Event::End(tag) => {
-        match tag {
-          TagEnd::Heading(_) | TagEnd::Paragraph | TagEnd::Item | TagEnd::Table | TagEnd::TableRow => {
-            if !in_metadata && !plain_text.ends_with('\n') {
-              plain_text.push('\n');
-            }
+      Event::End(tag) => match tag {
+        TagEnd::Heading(_)
+        | TagEnd::Paragraph
+        | TagEnd::Item
+        | TagEnd::Table
+        | TagEnd::TableRow => {
+          if !in_metadata && !plain_text.ends_with('\n') {
+            plain_text.push('\n');
           }
-          _ => {}
         }
-      }
+        _ => {}
+      },
       _ => {}
     }
   }
