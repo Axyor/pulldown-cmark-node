@@ -29,6 +29,8 @@ pub struct CompileOptions {
   pub math: Option<bool>,
   /// Enables all GFM extensions.
   pub gfm: Option<bool>,
+  /// Maximum length of the input Markdown string (in bytes) to prevent OOM/DoS attacks.
+  pub max_length: Option<u32>,
 }
 
 fn get_options(opts: Option<CompileOptions>) -> Options {
@@ -74,18 +76,40 @@ fn get_options(opts: Option<CompileOptions>) -> Options {
 
 /// Converts a Markdown string to HTML.
 ///
+/// **Security Note (XSS):** This function does not sanitize the generated HTML.
+/// If `markdown_input` comes from an untrusted source, the resulting HTML may contain
+/// malicious tags (like `<script>`). You **must** sanitize the output (e.g. using `DOMPurify`
+/// or `ammonia`) before rendering it.
+///
 /// # Arguments
 /// * `markdown_input` - The Markdown source string.
 /// * `options` - Optional compiler configuration.
 #[napi]
-pub fn markdown_to_html(markdown_input: String, options: Option<CompileOptions>) -> String {
-  let options = get_options(options);
-  let parser = Parser::new_ext(&markdown_input, options);
+pub fn markdown_to_html(
+  markdown_input: String,
+  options: Option<CompileOptions>,
+) -> napi::Result<String> {
+  if let Some(opts) = &options {
+    if let Some(max_length) = opts.max_length {
+      if markdown_input.len() > max_length as usize {
+        return Err(napi::Error::new(
+          napi::Status::InvalidArg,
+          format!(
+            "Input markdown exceeds maximum allowed length of {} bytes",
+            max_length
+          ),
+        ));
+      }
+    }
+  }
+
+  let parse_options = get_options(options);
+  let parser = Parser::new_ext(&markdown_input, parse_options);
 
   let mut html_output = String::with_capacity(markdown_input.len() * 3 / 2);
   html::push_html(&mut html_output, parser);
 
-  html_output
+  Ok(html_output)
 }
 
 /// Represents a heading in the document.

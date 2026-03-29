@@ -20,6 +20,8 @@ export interface CompileOptions {
   math?: boolean
   /** Enables all GFM extensions. */
   gfm?: boolean
+  /** Maximum length of the input Markdown string (in bytes) to prevent OOM/DoS attacks. */
+  maxLength?: number
 }
 
 /**
@@ -48,6 +50,11 @@ export interface Heading {
 
 /**
  * Converts a Markdown string to HTML.
+ *
+ * **Security Note (XSS):** This function does not sanitize the generated HTML.
+ * If `markdown_input` comes from an untrusted source, the resulting HTML may contain
+ * malicious tags (like `<script>`). You **must** sanitize the output (e.g. using `DOMPurify`
+ * or `ammonia`) before rendering it.
  *
  * # Arguments
  * * `markdown_input` - The Markdown source string.
