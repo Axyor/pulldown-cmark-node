@@ -26,7 +26,7 @@ const isFileMusl = (f) => f.includes('libc.musl-') || f.includes('ld-musl-')
 const isMuslFromFilesystem = () => {
   try {
     return readFileSync('/usr/bin/ldd', 'utf-8').includes('musl')
-  } catch {
+  } catch (e) {
     return null
   }
 }
