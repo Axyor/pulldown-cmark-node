@@ -28,6 +28,14 @@ test('markdownToHtml - with options (math)', (t) => {
   t.regex(html, /class="math math-inline"/)
 })
 
+test('markdownToHtml - throws if exceeds maxLength', (t) => {
+  const md = '# Hello World\nThis is **fast**.'
+  const error = t.throws(() => {
+    markdownToHtml(md, { maxLength: 10 })
+  })
+  t.regex(error!.message, /exceeds maximum allowed length/)
+})
+
 test('getHeadings - extracts headings with levels and ids', (t) => {
   const md = '# Intro {#id1}\n## Sub'
   const headings = getHeadings(md)

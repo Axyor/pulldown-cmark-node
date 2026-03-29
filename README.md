@@ -24,6 +24,12 @@ npm install pulldown-cmark-node
 
 ## Usage
 
+## Security Note (XSS)
+
+**Important:** This library converts Markdown to HTML directly. It does **not** sanitize the output. If you are rendering Markdown from untrusted user input, you **must** sanitize the resulting HTML to prevent Cross-Site Scripting (XSS) attacks.
+
+We recommend using a library like [DOMPurify](https://github.com/cure53/DOMPurify) (on the client or server) or [ammonia](https://github.com/rust-ammonia/ammonia) (if processing in Rust) to clean the generated HTML before rendering it in a browser.
+
 ### Basic Conversion
 
 ```javascript
@@ -81,6 +87,7 @@ Main conversion function.
 - `metadataBlocks`: Support YAML/Plus frontmatter.
 - `math`: Support LaTeX math blocks.
 - `gfm`: Enable all GitHub Flavored Markdown extensions.
+- `maxLength`: Maximum length of the input Markdown string (in bytes) to prevent OOM/DoS attacks.
 
 ### `getHeadings(input: string): Array<Heading>`
 Returns document headings with levels and optional IDs.
