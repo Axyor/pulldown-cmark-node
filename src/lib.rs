@@ -85,13 +85,19 @@ fn get_options(opts: Option<CompileOptions>) -> Options {
 /// * `markdown_input` - The Markdown source string.
 /// * `options` - Optional compiler configuration.
 #[napi]
-pub fn markdown_to_html(markdown_input: String, options: Option<CompileOptions>) -> napi::Result<String> {
+pub fn markdown_to_html(
+  markdown_input: String,
+  options: Option<CompileOptions>,
+) -> napi::Result<String> {
   if let Some(opts) = &options {
     if let Some(max_length) = opts.max_length {
       if markdown_input.len() > max_length as usize {
         return Err(napi::Error::new(
           napi::Status::InvalidArg,
-          format!("Input markdown exceeds maximum allowed length of {} bytes", max_length),
+          format!(
+            "Input markdown exceeds maximum allowed length of {} bytes",
+            max_length
+          ),
         ));
       }
     }
