@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Axyor/pulldown-cmark-node"
+    "url": "git+https://github.com/Axyor/pulldown-cmark-node.git"
   },
   "license": "MIT",
   "keywords": [
@@ -40,7 +40,7 @@
   "scripts": {
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
-    "prepublishOnly": "napi prepublish -t npm",
+    "prepublishOnly": "napi prepublish -t npm --skip-gh-release",
     "test": "ava"
   },
   "ava": {

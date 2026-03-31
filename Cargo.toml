@@ -5,7 +5,7 @@ edition = "2021"
 name = "pulldown-cmark-node"
 version = "1.2.0"
 description = "Blazingly fast Markdown to HTML renderer for Node.js using Rust's pulldown-cmark."
-repository = "https://github.com/ton-username/pulldown-cmark-node"
+repository = "https://github.com/Axyor/pulldown-cmark-node"
 license = "MIT"
 
 [lib]
