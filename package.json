@@ -1,12 +1,15 @@
 {
-  "name": "pulldown-cmark-node",
-  "version": "1.1.0",
+  "name": "@Axyor/pulldown-cmark-node",
+  "version": "1.2.2",
   "description": "Blazingly fast Markdown to HTML renderer for Node.js using Rust's pulldown-cmark.",
   "main": "index.js",
   "types": "index.d.ts",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ton-username/pulldown-cmark-node"
+    "url": "git+https://github.com/Axyor/pulldown-cmark-node.git"
   },
   "license": "MIT",
   "keywords": [
