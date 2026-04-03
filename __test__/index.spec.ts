@@ -5,6 +5,7 @@ import {
   getHeadings,
   extractMetadata,
   markdownToPlainText,
+  markdownToHtmlAsync,
 } from '../index'
 
 test('markdownToHtml - basic conversion', (t) => {
@@ -34,6 +35,45 @@ test('markdownToHtml - throws if exceeds maxLength', (t) => {
     markdownToHtml(md, { maxLength: 10 })
   })
   t.regex(error!.message, /exceeds maximum allowed length/)
+})
+
+test('markdownToHtml - with options (sanitize)', (t) => {
+  const md = 'Hello <script>alert("xss")</script> **world**'
+  const htmlUnsanitized = markdownToHtml(md)
+  t.regex(htmlUnsanitized, /<script>/)
+  
+  const htmlSanitized = markdownToHtml(md, { sanitize: true })
+  t.notRegex(htmlSanitized, /<script>/)
+  t.regex(htmlSanitized, /Hello/)
+})
+
+test('markdownToHtmlAsync - basic conversion', async (t) => {
+  const md = '# Hello Async'
+  const html = await markdownToHtmlAsync(md)
+  t.is(html.trim(), '<h1>Hello Async</h1>')
+})
+
+test('markdownToHtmlAsync - with options', async (t) => {
+  const md = '| a | b |\n|---|---|\n| 1 | 2 |'
+  const htmlEnabled = await markdownToHtmlAsync(md, { tables: true })
+  t.regex(htmlEnabled, /<table>/)
+})
+
+test('markdownToHtmlAsync - throws if exceeds maxLength', async (t) => {
+  const md = '# Hello World\nThis is **fast**.'
+  const error = await t.throwsAsync(async () => {
+    await markdownToHtmlAsync(md, { maxLength: 10 })
+  })
+  t.regex(error!.message, /exceeds maximum allowed length/)
+})
+
+test('markdownToHtmlAsync - with options (sanitize)', async (t) => {
+  const md = '<img src=x onerror=alert(1)>'
+  const htmlUnsanitized = await markdownToHtmlAsync(md)
+  t.regex(htmlUnsanitized, /onerror/)
+  
+  const htmlSanitized = await markdownToHtmlAsync(md, { sanitize: true })
+  t.notRegex(htmlSanitized, /onerror/)
 })
 
 test('getHeadings - extracts headings with levels and ids', (t) => {

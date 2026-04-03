@@ -22,6 +22,8 @@ export interface CompileOptions {
   gfm?: boolean
   /** Maximum length of the input Markdown string (in bytes) to prevent OOM/DoS attacks. */
   maxLength?: number
+  /** Enables HTML sanitization using the ammonia crate to prevent XSS. */
+  sanitize?: boolean
 }
 
 /**
@@ -61,6 +63,14 @@ export interface Heading {
  * * `options` - Optional compiler configuration.
  */
 export declare function markdownToHtml(markdownInput: string, options?: CompileOptions | undefined | null): string
+
+/**
+ * Converts a Markdown string to HTML asynchronously (non-blocking).
+ *
+ * Under the hood, this uses libuv's thread pool, making it ideal for processing
+ * large Markdown files without blocking the Node.js event loop.
+ */
+export declare function markdownToHtmlAsync(markdownInput: string, options?: CompileOptions | undefined | null): Promise<string>
 
 /**
  * Converts Markdown to plain text by stripping all formatting.

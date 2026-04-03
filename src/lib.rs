@@ -9,7 +9,7 @@ use pulldown_cmark::{html, Event, HeadingLevel, Options, Parser, Tag, TagEnd};
 
 /// Options for the Markdown compiler.
 #[napi(object)]
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct CompileOptions {
   /// Enables tables (GFM).
   pub tables: Option<bool>,
@@ -31,6 +31,8 @@ pub struct CompileOptions {
   pub gfm: Option<bool>,
   /// Maximum length of the input Markdown string (in bytes) to prevent OOM/DoS attacks.
   pub max_length: Option<u32>,
+  /// Enables HTML sanitization using the ammonia crate to prevent XSS.
+  pub sanitize: Option<bool>,
 }
 
 fn get_options(opts: Option<CompileOptions>) -> Options {
@@ -103,13 +105,53 @@ pub fn markdown_to_html(
     }
   }
 
-  let parse_options = get_options(options);
+  let parse_options = get_options(options.clone());
   let parser = Parser::new_ext(&markdown_input, parse_options);
 
   let mut html_output = String::with_capacity(markdown_input.len() * 3 / 2);
   html::push_html(&mut html_output, parser);
 
+  if let Some(opts) = options {
+    if opts.sanitize.unwrap_or(false) {
+      html_output = ammonia::clean(&html_output);
+    }
+  }
+
   Ok(html_output)
+}
+
+pub struct MarkdownTask {
+  markdown_input: String,
+  options: Option<CompileOptions>,
+}
+
+#[napi]
+impl napi::Task for MarkdownTask {
+  type Output = String;
+  type JsValue = String;
+
+  fn compute(&mut self) -> napi::Result<Self::Output> {
+    markdown_to_html(self.markdown_input.clone(), self.options.clone())
+  }
+
+  fn resolve(&mut self, env: napi::Env, output: Self::Output) -> napi::Result<Self::JsValue> {
+    Ok(output)
+  }
+}
+
+/// Converts a Markdown string to HTML asynchronously (non-blocking).
+///
+/// Under the hood, this uses libuv's thread pool, making it ideal for processing
+/// large Markdown files without blocking the Node.js event loop.
+#[napi]
+pub fn markdown_to_html_async(
+  markdown_input: String,
+  options: Option<CompileOptions>,
+) -> napi::bindgen_prelude::AsyncTask<MarkdownTask> {
+  napi::bindgen_prelude::AsyncTask::new(MarkdownTask {
+    markdown_input,
+    options,
+  })
 }
 
 /// Represents a heading in the document.
