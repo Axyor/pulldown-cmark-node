@@ -9,6 +9,8 @@ pulldown-cmark-node provides high-performance Markdown parsing and HTML renderin
 ## Features
 
 - High performance: Native execution for efficient parsing.
+- Asynchronous API: Non-blocking markdown processing via libuv thread pool.
+- Built-in Sanitization: Native XSS protection using the ammonia crate.
 - Memory safety: Built on Rust's ownership model.
 - Extensive GFM support: Tables, task lists, and strikethrough.
 - Heading extraction: Support for Table of Contents (TOC) generation.
@@ -26,9 +28,9 @@ npm install pulldown-cmark-node
 
 ## Security Note (XSS)
 
-**Important:** This library converts Markdown to HTML directly. It does **not** sanitize the output. If you are rendering Markdown from untrusted user input, you **must** sanitize the resulting HTML to prevent Cross-Site Scripting (XSS) attacks.
+**Important:** By default, this library converts Markdown to HTML directly without sanitization. If you are rendering Markdown from untrusted user input, you **must** use the built-in `sanitize: true` option or sanitize the resulting HTML yourself to prevent Cross-Site Scripting (XSS) attacks.
 
-We recommend using a library like [DOMPurify](https://github.com/cure53/DOMPurify) (on the client or server) or [ammonia](https://github.com/rust-ammonia/ammonia) (if processing in Rust) to clean the generated HTML before rendering it in a browser.
+We bundle the native Rust [ammonia](https://github.com/rust-ammonia/ammonia) library to provide zero-overhead, highly secure HTML sanitization directly during compilation.
 
 ### Basic Conversion
 
@@ -48,8 +50,22 @@ const html = markdownToHtml(markdown, {
   gfm: true,
   math: true,
   metadataBlocks: true,
-  headingAttributes: true
+  headingAttributes: true,
+  sanitize: true // Protects against XSS
 });
+```
+
+### Asynchronous Processing
+
+For large documents or heavy web server loads, use the non-blocking async API to prevent Event Loop starvation:
+
+```javascript
+const { markdownToHtmlAsync } = require('pulldown-cmark-node');
+
+async function render() {
+  const html = await markdownToHtmlAsync('# Giant Document', { sanitize: true });
+  console.log(html);
+}
 ```
 
 ### Heading Extraction
@@ -75,7 +91,10 @@ const plainText = markdownToPlainText('# Title\n**Bold** content');
 ## API Reference
 
 ### `markdownToHtml(input: string, options?: CompileOptions): string`
-Main conversion function.
+Main synchronous conversion function.
+
+### `markdownToHtmlAsync(input: string, options?: CompileOptions): Promise<string>`
+Non-blocking asynchronous conversion function. Execution is offloaded to the Node.js thread pool.
 
 **CompileOptions**
 - `tables`: Enable GFM tables.
@@ -87,6 +106,7 @@ Main conversion function.
 - `metadataBlocks`: Support YAML/Plus frontmatter.
 - `math`: Support LaTeX math blocks.
 - `gfm`: Enable all GitHub Flavored Markdown extensions.
+- `sanitize`: Securely clean the generated HTML to prevent XSS attacks.
 - `maxLength`: Maximum length of the input Markdown string (in bytes) to prevent OOM/DoS attacks.
 
 ### `getHeadings(input: string): Array<Heading>`
