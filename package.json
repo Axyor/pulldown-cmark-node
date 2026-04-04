@@ -1,6 +1,6 @@
 {
   "name": "@Axyor/pulldown-cmark-node",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Blazingly fast Markdown to HTML renderer for Node.js using Rust's pulldown-cmark.",
   "main": "index.js",
   "types": "index.d.ts",
